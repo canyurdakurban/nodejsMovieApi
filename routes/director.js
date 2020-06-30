@@ -119,5 +119,34 @@ router.get('/', (req,res) => {
 
 });
 
+//yonetmen guncelleme
+router.put('/:director_id', (req,res,next) => {
+  const promise = Director.findByIdAndUpdate(req.params.director_id, req.body, {
+    new:true
+  });
+
+  promise.then((director) => {
+    if (!director)  //hata yakalama
+      next({ message: 'Yönetmen bulunamadı.', code: 99});
+
+    res.json(director);
+  }).catch((err) => {
+    res.json(err);
+  });
+});
+
+//delete
+router.delete('/:director_id', (req,res,next) => {
+  const promise = Director.findByIdAndRemove(req.params.director_id);
+
+  promise.then((director) => {
+    if (!director)  //hata yakalama
+      next({message: 'Yönetmen bulunamadı.', code: 99});
+
+    res.json(director);
+  }).catch((err) => {
+    res.json(err);
+  });
+});
 
 module.exports = router;
