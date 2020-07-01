@@ -7,7 +7,19 @@ const Movie = require('../models/Movie')
 
 //Listele
 router.get('/', (req,res) => {
- const promise = Movie.find({ });
+ const promise = Movie.aggregate([
+   {
+     $lookup:{
+       from: 'directors',
+       localField: 'director_id',
+       foreignField: '_id',
+       as: 'directors'
+     }
+   },
+   {
+     $unwind: '$directors'
+   }
+ ]);
 
  promise.then((data) => {
    res.json(data);
@@ -91,7 +103,7 @@ router.delete('/:movie_id', (req,res,next) => {
 
 //Post methodu 2 farklı yöntem ile
 /* GET movie listing. */
-router.post('/', (req, res, next) => {
+router.post('/', (req, res) => {
   //const { title,imdb_score,category,county,year} = req.body;
 
   /*const movie = new Movie({
@@ -115,7 +127,7 @@ router.post('/', (req, res, next) => {
   const promise = movie.save();
 
   promise.then((data)=> {
-    res.json({status:1});
+    res.json(data);
   }).catch((err)=> {
     res.json(err);
   });
